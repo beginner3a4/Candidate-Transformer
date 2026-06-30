@@ -1,0 +1,8 @@
+{
+  "fields": [],
+  "include_confidence": true,
+  "include_provenance": true,
+  "include_decision_log": false,
+  "on_missing": "null",
+  "_comment": "Empty fields array = emit the full canonical profile as-is"
+}

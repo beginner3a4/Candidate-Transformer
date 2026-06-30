@@ -1,0 +1,156 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CanonicalCandidateProfile",
+  "description": "The single canonical profile produced by the v3.0 transformer pipeline",
+  "type": "object",
+  "required": ["candidate_id", "emails", "phones", "skills", "experience", "education", "provenance", "confidence"],
+  "properties": {
+    "candidate_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Deterministic hex ID derived from primary email or name"
+    },
+    "full_name": { "type": ["string", "null"] },
+    "emails": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "phones": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true,
+      "description": "E.164 format e.g. +14155552671"
+    },
+    "location": {
+      "type": ["object", "null"],
+      "properties": {
+        "city":    { "type": ["string", "null"] },
+        "region":  { "type": ["string", "null"] },
+        "country": { "type": ["string", "null"], "description": "ISO-3166 alpha-2" }
+      },
+      "additionalProperties": false
+    },
+    "links": {
+      "type": ["object", "null"],
+      "properties": {
+        "linkedin":  { "type": ["string", "null"] },
+        "github":    { "type": ["string", "null"] },
+        "github_username": { "type": ["string", "null"] },
+        "portfolio": { "type": ["string", "null"] },
+        "other":     { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "headline": { "type": ["string", "null"] },
+    "years_experience": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 70
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "confidence", "sources"],
+        "properties": {
+          "name":       { "type": "string", "minLength": 1 },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "sources":    { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      }
+    },
+    "experience": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["company", "title"],
+        "properties": {
+          "company":  { "type": ["string", "null"] },
+          "title":    { "type": ["string", "null"] },
+          "start":    { "type": ["string", "null"], "pattern": "^\\d{4}-\\d{2}$" },
+          "end":      { "type": ["string", "null"], "pattern": "^\\d{4}-\\d{2}$" },
+          "ongoing":  { "type": ["boolean", "null"] },
+          "summary":  { "type": ["string", "null"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "education": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["institution"],
+        "properties": {
+          "institution": { "type": "string" },
+          "degree":      { "type": ["string", "null"] },
+          "field":       { "type": ["string", "null"] },
+          "end_year":    { "type": ["number", "null"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "provenance": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["field", "source", "method"],
+        "properties": {
+          "field":             { "type": "string" },
+          "source":            { "type": "string" },
+          "method":            { "type": "string" },
+          "loader":            { "type": ["string", "null"] },
+          "extraction":        { "type": ["string", "null"] },
+          "normalization":     { "type": ["array", "null"], "items": { "type": "string" } },
+          "inference_rule":    { "type": ["string", "null"] },
+          "merge_decision":    { "type": ["string", "null"] },
+          "confidence_score":  { "type": ["number", "null"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "confidence": {
+      "type": "object",
+      "required": ["score", "explanation", "factors"],
+      "properties": {
+        "score":       { "type": "number", "minimum": 0, "maximum": 1 },
+        "explanation": { "type": "string" },
+        "factors":     {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["factor", "contribution"],
+            "properties": {
+              "factor":       { "type": "string" },
+              "contribution": { "type": "number" },
+              "detail":       { "type": ["string", "null"] }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "decision_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["field", "selected", "alternatives", "reason"],
+        "properties": {
+          "field":        { "type": "string" },
+          "selected":     {},
+          "alternatives": { "type": "array" },
+          "reason":       { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "inferred_fields": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Fields whose values were inferred (not directly extracted)"
+    }
+  },
+  "additionalProperties": false
+}

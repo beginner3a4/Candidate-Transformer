@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Candidate Transformer</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div id="loadingOverlay">
+  <div class="spinner-ring"></div>
+  <div style="font-size:1rem;font-weight:600">Running pipeline…</div>
+</div>
+
+<nav class="navbar px-4">
+  <span class="navbar-brand">Candidate Transformer</span>
+</nav>
+
+<div class="container py-5" style="max-width:760px">
+
+  <h1 style="font-size:1.4rem;font-weight:700;margin-bottom:.35rem">Multi-Source Candidate Pipeline</h1>
+  <p class="text-muted mb-4" style="font-size:.9rem">Upload files from any combination of sources. The pipeline normalizes, merges, infers, and produces a single canonical profile.</p>
+
+  <% if (error) { %>
+  <div class="alert alert-danger" style="font-size:.875rem"><%= error %></div>
+  <% } %>
+
+  <form method="POST" action="/run" enctype="multipart/form-data" data-loading>
+
+    <fieldset class="mb-4">
+      <legend style="font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:.75rem">Sources</legend>
+      <div class="row g-3">
+        <div class="col-6 col-md-3">
+          <div class="upload-zone">
+            <input type="file" name="ats" accept=".json">
+            <span class="icon">🗂️</span>
+            <div class="label">ATS JSON</div>
+            <div class="filename"></div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="upload-zone">
+            <input type="file" name="csv" accept=".csv">
+            <span class="icon">📊</span>
+            <div class="label">Recruiter CSV</div>
+            <div class="filename"></div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="upload-zone">
+            <input type="file" name="resume" accept=".pdf,.docx,.txt">
+            <span class="icon">📄</span>
+            <div class="label">Resume</div>
+            <div style="font-size:.68rem;color:var(--muted)">PDF · DOCX · TXT</div>
+            <div class="filename"></div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="upload-zone">
+            <input type="file" name="notes" accept=".txt">
+            <span class="icon">🗒️</span>
+            <div class="label">Notes</div>
+            <div class="filename"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <label class="form-label" style="font-size:.875rem;font-weight:500">GitHub Username <span class="text-muted">(optional)</span></label>
+        <input type="text" name="github" class="form-control form-control-sm" placeholder="username or https://github.com/username" style="max-width:360px;border-radius:6px">
+      </div>
+    </fieldset>
+
+    <fieldset class="mb-4">
+      <legend style="font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:.75rem">Options</legend>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label" style="font-size:.875rem">Output Config</label>
+          <select name="config" class="form-select form-select-sm">
+            <option value="default">Full Canonical</option>
+            <option value="custom">Custom Fields</option>
+          </select>
+        </div>
+        <div class="col-md-4 d-flex flex-column justify-content-end gap-1 pb-1">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="strict" id="strictCheck">
+            <label class="form-check-label" for="strictCheck" style="font-size:.875rem">Strict validation</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="verbose" id="verboseCheck">
+            <label class="form-check-label" for="verboseCheck" style="font-size:.875rem">Verbose logs</label>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="d-flex align-items-center gap-3">
+      <button type="submit" class="btn-run">Run Pipeline</button>
+      <button type="reset" class="btn btn-sm btn-outline-secondary">Reset</button>
+    </div>
+
+  </form>
+
+  <hr class="my-4">
+
+  <div>
+    <p class="text-muted mb-2" style="font-size:.875rem">Or run with the bundled example dataset (Jordan Rivera — 4 sources):</p>
+    <form method="POST" action="/run-examples" data-loading>
+      <input type="hidden" name="config" value="default">
+      <button type="submit" class="btn-example">Run Example</button>
+    </form>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>

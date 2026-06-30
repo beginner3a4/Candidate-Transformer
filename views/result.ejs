@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pipeline Result · Candidate Transformer</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-light bg-white px-4">
+  <span class="navbar-brand mb-0 h1">Candidate Transformer</span>
+  <a href="/" class="btn btn-sm btn-outline-secondary">← New Run</a>
+</nav>
+
+<div class="container py-4" style="max-width:900px">
+
+<% if (error) { %>
+
+  <div class="alert alert-danger" role="alert">
+    <strong>Pipeline Error:</strong> <%= error %>
+  </div>
+  <a href="/" class="btn btn-secondary">← Back</a>
+
+<% } else {
+  const canonical      = result.canonical  || {};
+  const validation     = result.validationResult || { valid: true, errors: [], warnings: [] };
+  const metrics        = result.metrics    || {};
+  const decisionLog    = canonical.decision_log  || [];
+  const provenance     = canonical.provenance    || [];
+  const skills         = canonical.skills        || [];
+  const experience     = canonical.experience    || [];
+  const education      = canonical.education     || [];
+  const confidence     = canonical.confidence    || {};
+  const confPct        = confidence.score != null ? Math.round(confidence.score * 100) : null;
+  const multiCandidate = (candidateCount || 1) > 1;
+%>
+
+<% if (multiCandidate) { %>
+<div class="alert alert-info" style="font-size:.875rem">
+  <strong><%= candidateCount %> candidates detected</strong> in input — showing highest-confidence profile.
+</div>
+<% } %>
+
+<!-- ── Downloads ──────────────────────────────────────────────────────────── -->
+<div class="section mb-4">
+  <h6 class="section-title">Downloads</h6>
+  <div class="d-flex flex-wrap gap-2">
+    <a href="/download/canonical"    class="btn btn-outline-secondary btn-sm">Canonical JSON</a>
+    <a href="/download/decision_log" class="btn btn-outline-secondary btn-sm">Decision Log</a>
+    <a href="/download/validation"   class="btn btn-outline-secondary btn-sm">Validation Report</a>
+    <a href="/download/projected"    class="btn btn-outline-secondary btn-sm">Projected Output</a>
+  </div>
+</div>
+
+<!-- ── Candidate Profile ──────────────────────────────────────────────────── -->
+<div class="section mb-4">
+  <h6 class="section-title">Canonical Profile</h6>
+  <div class="profile-card">
+
+    <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+      <div>
+        <div class="profile-name"><%= canonical.full_name || 'Unknown' %></div>
+        <% if (canonical.headline) { %>
+          <div class="profile-headline"><%= canonical.headline %></div>
+        <% } %>
+      </div>
+      <% if (confPct != null) { %>
+      <div class="conf-badge"><%= confPct %>% confidence</div>
+      <% } %>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-sm-4">
+        <div class="field-label">Email</div>
+        <% if (canonical.emails && canonical.emails.length) { %>
+          <% canonical.emails.forEach(e => { %><div class="field-val"><%= e %></div><% }) %>
+        <% } else { %><div class="field-val text-muted">—</div><% } %>
+      </div>
+      <div class="col-sm-4">
+        <div class="field-label">Phone</div>
+        <% if (canonical.phones && canonical.phones.length) { %>
+          <% canonical.phones.forEach(p => { %><div class="field-val"><%= p %></div><% }) %>
+        <% } else { %><div class="field-val text-muted">—</div><% } %>
+      </div>
+      <div class="col-sm-4">
+        <div class="field-label">Location</div>
+        <div class="field-val">
+          <%= canonical.location ? [canonical.location.city, canonical.location.region, canonical.location.country].filter(Boolean).join(', ') : '—' %>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="field-label">Years Experience</div>
+        <div class="field-val"><%= canonical.years_experience != null ? canonical.years_experience : '—' %></div>
+      </div>
+      <div class="col-sm-4">
+        <div class="field-label">LinkedIn</div>
+        <div class="field-val">
+          <% if (canonical.links && canonical.links.linkedin) { %>
+            <a href="<%= canonical.links.linkedin %>" target="_blank"><%= canonical.links.linkedin %></a>
+          <% } else { %>—<% } %>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="field-label">GitHub</div>
+        <div class="field-val">
+          <% if (canonical.links && canonical.links.github) { %>
+            <a href="<%= canonical.links.github %>" target="_blank"><%= canonical.links.github %></a>
+          <% } else { %>—<% } %>
+        </div>
+      </div>
+    </div>
+
+    <% if (skills.length > 0) { %>
+    <div class="mt-3">
+      <div class="field-label">Skills</div>
+      <div class="mt-1">
+        <% skills.forEach(sk => { %>
+          <span class="skill-pill"><%= sk.name %></span>
+        <% }) %>
+      </div>
+    </div>
+    <% } %>
+
+    <% if (experience.length > 0) { %>
+    <div class="mt-3">
+      <div class="field-label">Experience</div>
+      <table class="table table-sm mt-1 mb-0" style="font-size:.85rem">
+        <thead><tr><th>Title</th><th>Company</th><th>Period</th></tr></thead>
+        <tbody>
+          <% experience.forEach(exp => { %>
+          <tr>
+            <td><%= exp.title || '—' %></td>
+            <td><%= exp.company || '—' %></td>
+            <td style="white-space:nowrap"><%= exp.start || '?' %> – <%= exp.ongoing ? 'Present' : (exp.end || '?') %></td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
+
+    <% if (education.length > 0) { %>
+    <div class="mt-3">
+      <div class="field-label">Education</div>
+      <table class="table table-sm mt-1 mb-0" style="font-size:.85rem">
+        <thead><tr><th>Institution</th><th>Degree</th><th>Field</th><th>Year</th></tr></thead>
+        <tbody>
+          <% education.forEach(edu => { %>
+          <tr>
+            <td><%= edu.institution %></td>
+            <td><%= edu.degree || '—' %></td>
+            <td><%= edu.field  || '—' %></td>
+            <td><%= edu.end_year || '—' %></td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
+
+    <% if (confidence.explanation) { %>
+    <div class="mt-3" style="font-size:.82rem;color:#6b7280">
+      <strong>Confidence:</strong> <%= confidence.explanation %>
+    </div>
+    <% } %>
+
+    <% if (canonical.inferred_fields && canonical.inferred_fields.length > 0) { %>
+    <div class="mt-2" style="font-size:.82rem;color:#6b7280">
+      <strong>Inferred fields:</strong> <%= canonical.inferred_fields.join(', ') %>
+    </div>
+    <% } %>
+
+  </div>
+</div>
+
+<!-- ── Canonical JSON ─────────────────────────────────────────────────────── -->
+<div class="section mb-4">
+  <div class="d-flex align-items-center justify-content-between mb-2">
+    <h6 class="section-title mb-0">Canonical JSON</h6>
+    <button class="btn btn-sm btn-outline-secondary" onclick="copyJson()">Copy</button>
+  </div>
+  <pre id="canonicalPre" class="json-block"><%= JSON.stringify(canonical, null, 2) %></pre>
+</div>
+
+<!-- ── Decision Log ───────────────────────────────────────────────────────── -->
+<div class="section mb-4">
+  <h6 class="section-title">Decision Log <span class="count-badge"><%= decisionLog.length %></span></h6>
+  <% if (decisionLog.length === 0) { %>
+    <p class="text-muted" style="font-size:.875rem">No merge conflicts — all fields had a single source.</p>
+  <% } else { %>
+  <div class="table-responsive">
+    <table class="table table-sm table-bordered" style="font-size:.82rem">
+      <thead class="table-light">
+        <tr><th>Field</th><th>Selected Value</th><th>Source</th><th>Rejected Alternatives</th><th>Reason</th></tr>
+      </thead>
+      <tbody>
+        <% decisionLog.forEach(d => { %>
+        <tr>
+          <td><code><%= d.field %></code></td>
+          <td style="max-width:180px;word-break:break-word"><%= JSON.stringify(d.selected && d.selected.value != null ? d.selected.value : '—') %></td>
+          <td><span class="src-badge"><%= d.selected && d.selected.source ? d.selected.source : '—' %></span></td>
+          <td style="max-width:200px;font-size:.78rem;color:#6b7280">
+            <% if (d.alternatives && d.alternatives.length > 0) { %>
+              <% d.alternatives.forEach(a => { %>
+                <div><span class="src-badge"><%= a.source %></span> <%= JSON.stringify(a.value != null ? a.value : '—') %></div>
+              <% }) %>
+            <% } else { %>—<% } %>
+          </td>
+          <td style="font-size:.78rem;color:#6b7280"><%= d.reason || '—' %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+</div>
+
+<!-- ── Provenance ─────────────────────────────────────────────────────────── -->
+<div class="section mb-4">
+  <h6 class="section-title">Provenance <span class="count-badge"><%= provenance.length %></span></h6>
+  <% if (provenance.length === 0) { %>
+    <p class="text-muted" style="font-size:.875rem">No provenance data.</p>
+  <% } else { %>
+  <div class="table-responsive">
+    <table class="table table-sm table-bordered" style="font-size:.82rem">
+      <thead class="table-light">
+        <tr><th>Field</th><th>Source</th><th>Method</th><th>Normalization</th><th>Inference Rule</th></tr>
+      </thead>
+      <tbody>
+        <% provenance.forEach(p => { %>
+        <tr>
+          <td><code><%= p.field %></code></td>
+          <td><span class="src-badge"><%= p.source || '—' %></span></td>
+          <td style="font-size:.78rem"><%= p.method || '—' %></td>
+          <td style="font-size:.78rem;color:#6b7280">
+            <% if (Array.isArray(p.normalization) && p.normalization.length > 0) { %>
+              <%= p.normalization.join(', ') %>
+            <% } else { %>—<% } %>
+          </td>
+          <td style="font-size:.78rem">
+            <% if (p.inference_rule) { %><code><%= p.inference_rule %></code><% } else { %>—<% } %>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+</div>
+
+<!-- ── Validation ─────────────────────────────────────────────────────────── -->
+<div class="section mb-4">
+  <h6 class="section-title">Validation</h6>
+  <% if (validation.valid) { %>
+    <div class="alert alert-success mb-0" style="font-size:.875rem">
+      ✓ Schema validation passed — 0 errors
+      <% if (validation.warnings && validation.warnings.length > 0) { %>
+        · <%= validation.warnings.length %> warning(s): <%= validation.warnings.join('; ') %>
+      <% } %>
+    </div>
+  <% } else { %>
+    <div class="alert alert-danger mb-0" style="font-size:.875rem">
+      <%= validation.errors.length %> validation error(s):
+      <ul class="mb-0 mt-1">
+        <% validation.errors.forEach(e => { %><li><code><%= e.field %></code> — <%= e.message %></li><% }) %>
+      </ul>
+    </div>
+  <% } %>
+</div>
+
+<!-- ── Metrics summary ────────────────────────────────────────────────────── -->
+<div class="section mb-5">
+  <h6 class="section-title">Run Metrics</h6>
+  <table class="table table-sm table-bordered" style="font-size:.83rem;max-width:500px">
+    <tbody>
+      <tr><td>Sources processed</td><td><%= metrics.sources_processed || 0 %></td></tr>
+      <tr><td>Records extracted</td><td><%= metrics.records_extracted || 0 %></td></tr>
+      <tr><td>Fields normalized</td><td><%= metrics.fields_normalized || 0 %></td></tr>
+      <tr><td>Merge conflicts</td><td><%= metrics.merge_conflicts || 0 %></td></tr>
+      <tr><td>Inferred fields</td><td><%= metrics.inferred_fields || 0 %></td></tr>
+      <tr><td>Total runtime</td><td><%= metrics.total_duration_ms != null ? metrics.total_duration_ms + 'ms' : '—' %></td></tr>
+      <% if (metrics.loader_outcomes) { %>
+        <% metrics.loader_outcomes.forEach(l => { %>
+        <tr><td>Loader: <%= l.loader %></td><td><%= l.status %> · <%= l.records %> record(s)</td></tr>
+        <% }) %>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<% } %>
+</div><!-- /container -->
+
+<script>
+function copyJson() {
+  const pre = document.getElementById('canonicalPre');
+  if (!pre) return;
+  navigator.clipboard.writeText(pre.textContent).then(() => {
+    const btn = event.target;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1800);
+  });
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

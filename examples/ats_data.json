@@ -1,0 +1,66 @@
+{
+  "applicants": [
+    {
+      "applicant_name": "Jordan Rivera",
+      "contact": {
+        "email": "jordan.Rivera@proton.me",
+        "phone": "+1-737-555-0183",
+        "alt_email": "jrivera.dev@gmail.com"
+      },
+      "position": "Staff Software Engineer",
+      "company": "Meridian Technologies",
+      "location": {
+        "city": "Austin",
+        "state": "TX",
+        "country": "United States"
+      },
+      "skills": [
+        "TypeScript",
+        "React",
+        "Node.js",
+        "GraphQL",
+        "PostgreSQL",
+        "AWS",
+        "Docker",
+        "Kubernetes",
+        "Python",
+        "Terraform"
+      ],
+      "work_history": [
+        {
+          "company": "Meridian Technologies",
+          "title": "Staff Software Engineer",
+          "start_date": "2021-03",
+          "end_date": null,
+          "description": "Lead architecture and delivery of the platform engineering roadmap for a team of 12 engineers. Designed a distributed event-driven microservices system handling 500M+ requests per day. Drove adoption of TypeScript, GraphQL, and infrastructure-as-code across the org."
+        },
+        {
+          "company": "Facebook",
+          "title": "Senior Software Engineer",
+          "start_date": "2018-01",
+          "end_date": "2021-02",
+          "description": "Worked on the News Feed ranking infrastructure. Improved content delivery latency by 22% through service decomposition and caching strategies. Mentored 5 engineers and led the migration of 3 legacy services to Go."
+        },
+        {
+          "company": "Stripe",
+          "title": "Software Engineer",
+          "start_date": "2015-06",
+          "end_date": "2017-12",
+          "description": "Built payment processing APIs and developer tooling. Contributed to the Ruby and Python SDKs. Improved API response time by 18% via async job queuing and connection pooling."
+        }
+      ],
+      "education": [
+        {
+          "school": "University of Texas at Austin",
+          "degree": "B.S.",
+          "field_of_study": "Computer Science",
+          "graduation_year": 2015
+        }
+      ],
+      "linkedin_url": "https://www.linkedin.com/in/jordan-m-rivera",
+      "github_url": "https://github.com/jrivera-dev",
+      "portfolio_url": "https://jordanrivera.dev",
+      "years_experience": 9
+    }
+  ]
+}

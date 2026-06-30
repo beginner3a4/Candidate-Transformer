@@ -1,0 +1,22 @@
+Recruiter Notes — Jordan Rivera
+Interview date: 2024-03-12
+
+Spoke with Jordan Rivera today. Strong candidate for the Engineering Lead / Staff IC track.
+
+Contact: jordan.Rivera@proton.me | 737-555-0183
+Alternate: jrivera.dev@gmail.com
+LinkedIn: https://linkedin.com/in/jordan-m-rivera
+GitHub: https://github.com/jrivera-dev
+Portfolio: https://jordanrivera.dev
+
+Currently working as Engineering Lead at Meridian Technologies Inc in Austin, Texas.
+Has over 9 years of experience in software engineering.
+
+Strong in TypeScript, TS, React, Node.js, GraphQL, AWS, Docker, Kubernetes, Python.
+Previously at Facebook (now Meta) and Stripe — solid FAANG + fintech background.
+
+Salary expectations: $240K-$280K total comp. Open to hybrid (2 days/week in-office).
+Notice period: 4 weeks.
+
+Impression: Excellent communicator, system-design depth, strong team leadership instincts.
+Follow up by March 19 with hiring manager intro.

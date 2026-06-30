@@ -1,0 +1,34 @@
+{
+  "applicants": [
+    {
+      "applicant_name": "Jordan Rivera",
+      "contact": {
+        "email": "jordan.Rivera@proton.me",
+        "phone": "+17375550183"
+      },
+      "position": "Staff Software Engineer",
+      "company": "Meridian Technologies",
+      "skills": ["TypeScript", "React", "Node.js"]
+    },
+    {
+      "applicant_name": "Jordan Rivera",
+      "contact": {
+        "email": "jordan.Rivera@proton.me",
+        "phone": "(737) 555-0183"
+      },
+      "position": "Staff Software Engineer",
+      "company": "Meridian Technologies",
+      "skills": ["TypeScript", "React", "GraphQL", "AWS"]
+    },
+    {
+      "applicant_name": "Priya Sharma",
+      "contact": {
+        "email": "priya.sharma@techcorp.io",
+        "phone": "+919812345678"
+      },
+      "position": "Principal Engineer",
+      "company": "TechCorp India",
+      "skills": ["Python", "Kubernetes", "TensorFlow"]
+    }
+  ]
+}

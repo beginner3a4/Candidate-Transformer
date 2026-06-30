@@ -1,0 +1,5 @@
+name,email,phone,current_company,title,location,skills
+Jordan Rivera,jordan.Rivera@proton.me,(737) 555-0183,Meridian Technologies,Staff Software Engineer,Austin TX,"TypeScript,React,Node.js"
+Priya Sharma,priya.sharma@techcorp.io,+91-98-1234-5678,TechCorp India,Principal Engineer,Bangalore India,"Python,Kubernetes,TensorFlow"
+Marcus Lee,marcus.lee@example.com,+44-20-7946-0123,London Fintech Ltd,Head of Engineering,London UK,"Go,Rust,PostgreSQL"
+Jordan Rivera,Jordan.Rivera@proton.me,7375550183,Meridian Tech,Sr. Staff Engineer,Austin Texas,"TypeScript,GraphQL,AWS"

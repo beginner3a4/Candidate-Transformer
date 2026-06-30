@@ -1,0 +1,32 @@
+Jordan Rivera
+jrivera.dev@gmail.com | (737) 555-0183 | Austin, TX
+https://linkedin.com/in/jordan-m-rivera | https://github.com/jrivera-dev | https://jordanrivera.dev
+
+SUMMARY
+Senior software engineer with 8+ years of experience designing and shipping distributed systems, platform infrastructure, and developer tooling at scale. Deep expertise in TypeScript, React, Node.js and cloud-native architectures.
+
+SKILLS
+TypeScript, JavaScript, React, Node.js, GraphQL, Python, Go, PostgreSQL, Redis, AWS, GCP, Docker, Kubernetes, Terraform, CI/CD, REST API, Microservices, System Design, Agile
+
+EXPERIENCE
+
+Staff Software Engineer | Meridian Technologies Inc | March 2021 - Present
+Lead platform engineering roadmap for a team of 12.
+Designed distributed event-driven system handling 500M+ requests/day.
+Drove TypeScript and GraphQL adoption across the engineering organization.
+
+Senior Software Engineer | Meta | January 2018 - February 2021
+News Feed ranking infrastructure. Cut content delivery latency by 22%.
+Led migration of 3 legacy services to Go. Mentored junior engineers.
+
+Software Engineer | Stripe | June 2015 - December 2017
+Built payment APIs and developer tooling. Contributed to Python and Ruby SDKs.
+Improved API response time 18% via async queuing and connection pooling.
+
+EDUCATION
+
+University of Texas at Austin
+B.S. Computer Science | Graduated 2015
+
+CERTIFICATIONS
+AWS Certified Solutions Architect - Associate (2022)

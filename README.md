@@ -16,11 +16,14 @@
 4. [Tech Stack](#tech-stack)
 5. [Quick Start](#quick-start)
 6. [Input Sources](#input-sources)
-7. [Pipeline Stages](#pipeline-stages)
-8. [Source Priority](#source-priority)
-9. [Canonical Schema](#canonical-schema)
-10. [Edge Cases](#edge-cases)
-11. [Design Decisions](#design-decisions)
+7. [Pipeline Flowchart](#pipeline-flowchart)
+8. [Pipeline Stages](#pipeline-stages)
+9. [Assumptions](#assumptions)
+10. [Source Priority](#source-priority)
+11. [Confidence Scoring](#confidence-scoring)
+12. [Canonical Schema](#canonical-schema)
+13. [Edge Cases](#edge-cases)
+14. [Design Decisions](#design-decisions)
 
 ---
 
@@ -136,6 +139,60 @@ curl http://localhost:5000/download/decision_log  -o decision_log.json
 
 ---
 
+## Pipeline Flowchart
+
+```
+┌─────────────────┐     ┌──────────────────────┐
+│  CSV (multi-row)│     │  Resume folder (PDFs) │
+└────────┬────────┘     └──────────┬───────────┘
+         │                         │
+         ▼                         ▼
+┌─────────────────┐     ┌──────────────────────┐
+│  CSVLoader      │     │  ResumeLoader        │
+│  (adapter)      │     │  (adapter)           │
+└────────┬────────┘     └──────────┬───────────┘
+         │                         │
+         └──────────┬──────────────┘
+                    ▼
+           ┌────────────────┐
+           │  Normalizers   │
+           │ email/phone/   │
+           │ skill/date     │
+           └────────┬───────┘
+                    ▼
+           ┌────────────────┐
+           │    Matcher     │
+           │ email→phone→   │
+           │ name (indexed) │
+           └────────┬───────┘
+                    ▼
+           ┌────────────────┐
+           │  Merge Engine  │
+           │  + Provenance  │
+           └────────┬───────┘
+                    ▼
+           ┌────────────────┐
+           │  Confidence    │
+           │   Scoring      │
+           └────────┬───────┘
+                    ▼
+           ┌────────────────┐
+           │   Validator    │
+           └────────┬───────┘
+                    ▼
+           ┌────────────────┐
+           │   Projector    │
+           │   (optional)   │
+           └────────┬───────┘
+                    ▼
+           ┌────────────────┐
+           │ canonical.json │
+           │  [profile, …]  │
+           └────────────────┘
+```
+
+---
+
 ## Pipeline Stages
 
 | # | Stage | What happens |
@@ -153,6 +210,17 @@ curl http://localhost:5000/download/decision_log  -o decision_log.json
 
 ---
 
+## Assumptions
+
+- Default phone region is **India (IN)** for numbers without a country code.
+- CSV has one candidate per row; exact-duplicate rows (same email + phone + name) are skipped.
+- Resume PDFs contain machine-readable text — scanned images are not supported.
+- Name matching is used **only** when both records lack email and phone.
+- Validation warnings are logged; the pipeline continues processing remaining candidates.
+- Confidence scores are **deterministic** — identical inputs always produce identical outputs.
+
+---
+
 ## Source Priority
 
 For **scalar fields** (name, headline, title) the highest-priority non-null source wins. For **list fields** (emails, phones, skills, experience) all sources contribute and results are unioned + deduplicated.
@@ -164,6 +232,35 @@ For **scalar fields** (name, headline, title) the highest-priority non-null sour
 | 3 | Resume | Candidate self-reported |
 | 4 | GitHub | Public, verifiable |
 | 5 | Notes | Subjective free-text |
+
+---
+
+## Confidence Scoring
+
+**Source base scores**
+
+| Source | Base Score |
+|---|---|
+| CSV | 0.95 |
+| Resume | 0.85 |
+| Notes | 0.70 |
+
+**Field weights**
+
+| Field | Weight |
+|---|---|
+| `full_name` | 1.00 |
+| `emails` | 0.98 |
+| `phones` | 0.95 |
+| `skills` | 0.88 |
+| `headline` | 0.85 |
+| `experience` | 0.82 |
+| `education` | 0.80 |
+| `years_experience` | 0.80 |
+| `location` | 0.75 |
+| `links` | 0.70 |
+
+Final confidence = weighted average of populated fields × winning source base score.
 
 ---
 
@@ -193,13 +290,22 @@ For **scalar fields** (name, headline, title) the highest-priority non-null sour
 
 | Scenario | Handling |
 |---|---|
-| Missing source file | Loader logs warning, returns `null`; pipeline continues |
-| Malformed JSON / CSV | Parser error caught, empty partial returned |
-| Conflicting names | ATS name wins; lower-priority names recorded in provenance |
-| Phone without country code | US default (`+1`) applied; if invalid → `null` |
-| `"Present"` / `"Current"` end date | Mapped to `null` (ongoing role) |
-| Duplicate skills (`JS` / `JavaScript`) | Alias map → single canonical `JavaScript` |
-| All sources fail or are malformed | Pipeline throws with a descriptive error; partial sources still contribute |
+| Missing CSV / resume / config | Warning logged; continues with available sources |
+| Corrupted or empty PDF | Skipped with warning |
+| Duplicate CSV rows | Deduplicated by email + phone + name |
+| Invalid phone numbers | Removed; provenance entry recorded |
+| Invalid email addresses | Removed; provenance entry recorded |
+| All-same-digit phones (e.g. `0000000000`) | Blocked by fake-number filter |
+| Same phone, different emails | Never merged — email takes priority |
+| Same name, different emails | Never merged |
+| Transitive email conflict via Union-Find | Post-merge validation splits the group |
+| Multiple resumes for same candidate | Merged via matcher |
+| Duplicate skills / emails / phones | Deduplicated during normalisation |
+| Invalid JSON projection config | Warning logged; default output shape used |
+| Unsupported file formats in resume folder | Skipped with warning |
+| Null values / blank strings | Treated as missing; skipped gracefully |
+| Extra whitespace in CSV cells | Trimmed during normalisation |
+| Uppercase emails | Lowercased; provenance entry recorded |
 
 ---
 
